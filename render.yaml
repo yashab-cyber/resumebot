@@ -21,6 +21,6 @@ services:
       - key: AI_PROVIDER
         value: gemini
       - key: NEXT_PUBLIC_API_URL
-        value: https://resumebot-4599.onrender.com/api
+        value: https://resumebot-4599.onrender.com
       - key: NEXT_PUBLIC_APP_URL
         value: https://resumebot-4599.onrender.com
