@@ -67,6 +67,24 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
+    // Ensure user has plan fields (for existing users created before plan system)
+    let needsSave = false;
+    if (!user.plan) {
+      user.plan = 'free';
+      needsSave = true;
+    }
+    if (!user.dailyConversations || user.dailyConversations.count === undefined) {
+      user.dailyConversations = {
+        count: 0,
+        lastReset: new Date(),
+      };
+      needsSave = true;
+    }
+    if (needsSave) {
+      await user.save();
+      console.log(`✅ Migrated user ${user.email} to plan system`);
+    }
+
     // Create token
     const token = jwt.sign(
       { userId: user._id },

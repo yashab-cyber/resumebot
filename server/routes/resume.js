@@ -23,20 +23,28 @@ router.post('/', auth, async (req, res) => {
       );
     } else {
       // Check plan limits before creating new resume
-      const user = await User.findById(userId).populate('resumes');
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Count existing bots directly from Resume collection
+      const currentBotCount = await Resume.countDocuments({ userId });
+      
       const planLimits = {
         free: { maxResumeBots: 1 },
         pro: { maxResumeBots: Infinity },
         team: { maxResumeBots: Infinity },
       };
       
-      const currentBotCount = user.resumes.length;
-      const maxBots = planLimits[user.plan].maxResumeBots;
+      const maxBots = planLimits[user.plan || 'free'].maxResumeBots;
+      
+      console.log(`🔍 User ${user.email} plan: ${user.plan || 'free'}, Current bots: ${currentBotCount}, Max bots: ${maxBots}`);
       
       if (currentBotCount >= maxBots) {
         return res.status(403).json({
-          error: `You've reached the limit of ${maxBots} resume bot${maxBots === 1 ? '' : 's'} for your ${user.plan} plan.`,
-          upgrade: user.plan === 'free' ? 'pro' : null,
+          error: `You've reached the limit of ${maxBots} resume bot${maxBots === 1 ? '' : 's'} for your ${user.plan || 'free'} plan.`,
+          upgrade: (user.plan === 'free' || !user.plan) ? 'pro' : null,
         });
       }
 
@@ -49,9 +57,7 @@ router.post('/', auth, async (req, res) => {
       });
       await resume.save();
       
-      // Add resume to user's resumes array
-      user.resumes.push(resume._id);
-      await user.save();
+      console.log(`✅ Bot created for user ${user.email}. Total bots: ${currentBotCount + 1}`);
     }
 
     res.json(resume);

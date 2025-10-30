@@ -64,6 +64,7 @@ router.post('/:botId', async (req, res) => {
       const hoursSinceReset = (now - lastReset) / (1000 * 60 * 60);
 
       if (hoursSinceReset >= 24) {
+        console.log(`🔄 Resetting conversation count for user ${user.email}`);
         user.dailyConversations.count = 0;
         user.dailyConversations.lastReset = now;
         await user.save();
@@ -76,19 +77,25 @@ router.post('/:botId', async (req, res) => {
         team: Infinity,
       };
 
-      const maxConversations = conversationLimits[user.plan];
+      const userPlan = user.plan || 'free';
+      const maxConversations = conversationLimits[userPlan];
+      const currentCount = user.dailyConversations.count || 0;
       
-      if (user.dailyConversations.count >= maxConversations) {
+      console.log(`🔍 User ${user.email} plan: ${userPlan}, Conversations today: ${currentCount}/${maxConversations}`);
+      
+      if (currentCount >= maxConversations) {
+        console.log(`❌ Conversation limit reached for user ${user.email}`);
         return res.status(403).json({
-          error: `Daily conversation limit reached (${maxConversations} conversations/day for ${user.plan} plan)`,
-          upgrade: user.plan === 'free' ? 'pro' : null,
+          error: `Daily conversation limit reached (${maxConversations} conversations/day for ${userPlan} plan)`,
+          upgrade: (userPlan === 'free') ? 'pro' : null,
           resetTime: new Date(user.dailyConversations.lastReset.getTime() + 24 * 60 * 60 * 1000),
         });
       }
 
       // Increment conversation count
-      user.dailyConversations.count += 1;
+      user.dailyConversations.count = currentCount + 1;
       await user.save();
+      console.log(`✅ Conversation counted. New count: ${user.dailyConversations.count}/${maxConversations}`);
     }
 
     // Get or create session
