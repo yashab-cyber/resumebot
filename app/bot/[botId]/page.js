@@ -123,100 +123,97 @@ export default function BotPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-5xl mx-auto px-4 py-6">
-          <div className="flex items-center space-x-4">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-3 rounded-full">
-              <FaRobot className="text-3xl text-white" />
+        <div className="max-w-5xl mx-auto px-4 py-4 sm:py-6">
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 sm:p-3 rounded-full flex-shrink-0">
+              <FaRobot className="text-2xl sm:text-3xl text-white" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{resume.personalInfo.fullName}</h1>
-              <p className="text-gray-600">{resume.personalInfo.email}</p>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{resume.personalInfo.fullName}</h1>
+              <p className="text-sm sm:text-base text-gray-600 truncate">{resume.personalInfo.email}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Chat Container */}
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden" style={{ height: '70vh' }}>
+      <div className="max-w-5xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <div className="bg-white rounded-lg sm:rounded-2xl shadow-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 140px)' }}>
           {/* Messages */}
-          <div className="h-full flex flex-col">
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {messages.map((msg, index) => (
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4">
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`flex items-start space-x-2 sm:space-x-3 ${
+                  msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''
+                }`}
+              >
                 <div
-                  key={index}
-                  className={`flex items-start space-x-3 ${
-                    msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''
+                  className={`p-1.5 sm:p-2 rounded-full flex-shrink-0 ${
+                    msg.role === 'assistant'
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600'
+                      : 'bg-gray-600'
                   }`}
                 >
-                  <div
-                    className={`p-2 rounded-full ${
-                      msg.role === 'assistant'
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600'
-                        : 'bg-gray-600'
-                    }`}
-                  >
-                    {msg.role === 'assistant' ? (
-                      <FaRobot className="text-white text-xl" />
-                    ) : (
-                      <FaUser className="text-white text-xl" />
-                    )}
-                  </div>
-                  <div
-                    className={`max-w-xl px-4 py-3 rounded-2xl ${
-                      msg.role === 'assistant'
-                        ? 'bg-gray-100 text-gray-900'
-                        : 'bg-blue-600 text-white'
-                    }`}
-                  >
-                    <p className="whitespace-pre-wrap">{msg.content}</p>
-                  </div>
+                  {msg.role === 'assistant' ? (
+                    <FaRobot className="text-white text-base sm:text-xl" />
+                  ) : (
+                    <FaUser className="text-white text-base sm:text-xl" />
+                  )}
                 </div>
-              ))}
-              {sending && (
-                <div className="flex items-start space-x-3">
-                  <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-full">
-                    <FaRobot className="text-white text-xl" />
-                  </div>
-                  <div className="bg-gray-100 px-4 py-3 rounded-2xl">
-                    <div className="flex space-x-2">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Input */}
-            <div className="border-t p-4">
-              <div className="flex space-x-3">
-                <input
-                  type="text"
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Ask me anything about this resume..."
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  disabled={sending}
-                />
-                <button
-                  onClick={sendMessage}
-                  disabled={sending || !inputMessage.trim()}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                <div
+                  className={`max-w-[75%] sm:max-w-xl px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl ${
+                    msg.role === 'assistant'
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'bg-blue-600 text-white'
+                  }`}
                 >
-                  <FaPaperPlane />
-                  <span>Send</span>
-                </button>
+                  <p className="whitespace-pre-wrap text-sm sm:text-base break-words">{msg.content}</p>
+                </div>
               </div>
+            ))}
+            {sending && (
+              <div className="flex items-start space-x-2 sm:space-x-3">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-1.5 sm:p-2 rounded-full">
+                  <FaRobot className="text-white text-base sm:text-xl" />
+                </div>
+                <div className="bg-gray-100 px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input */}
+          <div className="border-t p-3 sm:p-4 bg-gray-50">
+            <div className="flex space-x-2 sm:space-x-3">
+              <input
+                type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask me anything..."
+                disabled={sending}
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:bg-gray-100"
+              />
+                            <button
+                onClick={sendMessage}
+                disabled={!inputMessage.trim() || sending}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+              >
+                <FaPaperPlane className="text-base sm:text-lg" />
+              </button>
             </div>
           </div>
         </div>
 
         {/* Quick Questions */}
-        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-2 sm:gap-3">
           {[
             "What's your experience?",
             "Tell me about your skills",
@@ -226,7 +223,7 @@ export default function BotPage() {
             <button
               key={index}
               onClick={() => setInputMessage(question)}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:border-blue-500 hover:text-blue-600 transition text-sm"
+              className="px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg hover:border-blue-500 hover:text-blue-600 transition text-xs sm:text-sm"
             >
               {question}
             </button>
