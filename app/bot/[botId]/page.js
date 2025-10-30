@@ -66,6 +66,21 @@ export default function BotPage() {
         const data = await response.json();
         setSessionId(data.sessionId);
         setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
+      } else if (response.status === 403) {
+        const errorData = await response.json();
+        console.error('API error:', errorData);
+        let errorMessage = errorData.error || 'Conversation limit reached.';
+        if (errorData.upgrade) {
+          errorMessage += '\n\nUpgrade to Pro for unlimited conversations!';
+        }
+        if (errorData.resetTime) {
+          const resetTime = new Date(errorData.resetTime);
+          errorMessage += `\n\nLimit resets at ${resetTime.toLocaleTimeString()}`;
+        }
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: errorMessage,
+        }]);
       } else {
         const errorData = await response.json();
         console.error('API error:', errorData);

@@ -2,6 +2,7 @@ const express = require('express');
 const OpenAI = require('openai');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Resume = require('../models/Resume');
+const User = require('../models/User');
 const ChatHistory = require('../models/ChatHistory');
 const { v4: uuidv4 } = require('uuid');
 
@@ -53,6 +54,42 @@ router.post('/:botId', async (req, res) => {
     }
 
     console.log('✅ Resume found:', resume.personalInfo.fullName);
+
+    // Check conversation limits for the bot owner
+    const user = await User.findById(resume.userId);
+    if (user) {
+      // Reset daily conversation count if needed
+      const now = new Date();
+      const lastReset = new Date(user.dailyConversations.lastReset);
+      const hoursSinceReset = (now - lastReset) / (1000 * 60 * 60);
+
+      if (hoursSinceReset >= 24) {
+        user.dailyConversations.count = 0;
+        user.dailyConversations.lastReset = now;
+        await user.save();
+      }
+
+      // Check conversation limits based on plan
+      const conversationLimits = {
+        free: 5,
+        pro: Infinity,
+        team: Infinity,
+      };
+
+      const maxConversations = conversationLimits[user.plan];
+      
+      if (user.dailyConversations.count >= maxConversations) {
+        return res.status(403).json({
+          error: `Daily conversation limit reached (${maxConversations} conversations/day for ${user.plan} plan)`,
+          upgrade: user.plan === 'free' ? 'pro' : null,
+          resetTime: new Date(user.dailyConversations.lastReset.getTime() + 24 * 60 * 60 * 1000),
+        });
+      }
+
+      // Increment conversation count
+      user.dailyConversations.count += 1;
+      await user.save();
+    }
 
     // Get or create session
     const sid = sessionId || uuidv4();

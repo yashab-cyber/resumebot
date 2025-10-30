@@ -53,17 +53,32 @@ export default function CreateResume() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          isPublic: true,
+        }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const resume = await response.json();
-        router.push(`/share/${resume.botId}`);
+        alert('Resume bot created successfully! 🎉');
+        router.push('/dashboard');
+      } else if (response.status === 403) {
+        // Plan limit reached
+        if (data.upgrade) {
+          const upgrade = confirm(`${data.error}\n\nWould you like to upgrade to ${data.upgrade} plan?`);
+          if (upgrade) {
+            router.push('/pricing');
+          }
+        } else {
+          alert(data.error);
+        }
       } else {
-        throw new Error('Failed to save resume');
+        alert(data.error || 'Failed to save resume');
       }
     } catch (error) {
-      console.error('Error saving resume:', error);
+      console.error('Save error:', error);
       alert('Failed to save resume. Please try again.');
     } finally {
       setLoading(false);

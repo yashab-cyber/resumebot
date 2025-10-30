@@ -33,6 +33,7 @@ app.prepare().then(() => {
   server.use('/api/resume', require('./server/routes/resume'));
   server.use('/api/bot', require('./server/routes/bot'));
   server.use('/api/chat', require('./server/routes/chat'));
+  server.use('/api/plan', require('./server/routes/plan'));
 
   // Health Check
   server.get('/api/health', (req, res) => {

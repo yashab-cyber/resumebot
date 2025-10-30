@@ -1,7 +1,9 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const Resume = require('../models/Resume');
+const User = require('../models/User');
 const auth = require('../middleware/auth');
+const { canCreateBot } = require('../middleware/planLimits');
 
 const router = express.Router();
 
@@ -20,6 +22,24 @@ router.post('/', auth, async (req, res) => {
         { new: true }
       );
     } else {
+      // Check plan limits before creating new resume
+      const user = await User.findById(userId).populate('resumes');
+      const planLimits = {
+        free: { maxResumeBots: 1 },
+        pro: { maxResumeBots: Infinity },
+        team: { maxResumeBots: Infinity },
+      };
+      
+      const currentBotCount = user.resumes.length;
+      const maxBots = planLimits[user.plan].maxResumeBots;
+      
+      if (currentBotCount >= maxBots) {
+        return res.status(403).json({
+          error: `You've reached the limit of ${maxBots} resume bot${maxBots === 1 ? '' : 's'} for your ${user.plan} plan.`,
+          upgrade: user.plan === 'free' ? 'pro' : null,
+        });
+      }
+
       // Create new resume
       const botId = uuidv4().substring(0, 8);
       resume = new Resume({
@@ -28,6 +48,10 @@ router.post('/', auth, async (req, res) => {
         botId,
       });
       await resume.save();
+      
+      // Add resume to user's resumes array
+      user.resumes.push(resume._id);
+      await user.save();
     }
 
     res.json(resume);
