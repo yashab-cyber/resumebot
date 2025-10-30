@@ -108,7 +108,7 @@ router.post('/:botId', async (req, res) => {
         throw new Error('Gemini AI not initialized');
       }
 
-      const model = gemini.getGenerativeModel({ model: 'gemini-pro' });
+      const model = gemini.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
 
       // Build conversation history for Gemini
       const conversationHistory = recentMessages.map(msg => 
