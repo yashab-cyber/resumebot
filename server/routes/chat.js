@@ -10,14 +10,31 @@ const router = express.Router();
 // Initialize AI provider based on environment variable
 const AI_PROVIDER = process.env.AI_PROVIDER || 'gemini';
 
+console.log('🔧 AI Provider:', AI_PROVIDER);
+console.log('🔑 Gemini API Key:', process.env.GEMINI_API_KEY ? 'Present ✅' : 'Missing ❌');
+
 let openai, gemini;
 
 if (AI_PROVIDER === 'openai') {
-  openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
+  if (!process.env.OPENAI_API_KEY) {
+    console.error('❌ OPENAI_API_KEY is missing!');
+  } else {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    console.log('✅ OpenAI initialized');
+  }
 } else if (AI_PROVIDER === 'gemini') {
-  gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  if (!process.env.GEMINI_API_KEY) {
+    console.error('❌ GEMINI_API_KEY is missing!');
+  } else {
+    try {
+      gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      console.log('✅ Gemini initialized');
+    } catch (error) {
+      console.error('❌ Gemini initialization failed:', error.message);
+    }
+  }
 }
 
 // Chat with bot
@@ -111,9 +128,15 @@ Respond naturally and professionally:`;
 
       console.log('📤 Sending to Gemini...');
       const result = await model.generateContent(prompt);
+      console.log('📥 Raw result received:', result);
+      
       const response = await result.response;
+      console.log('📝 Response object:', response);
+      
       assistantMessage = response.text();
       console.log('✅ Gemini response received:', assistantMessage.substring(0, 100) + '...');
+    } else {
+      throw new Error(`Unknown AI provider: ${AI_PROVIDER}`);
     }
 
     // Save to chat history
