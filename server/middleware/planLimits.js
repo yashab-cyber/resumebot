@@ -71,7 +71,7 @@ const resetDailyConversationsIfNeeded = async (user) => {
 // Check if user can create a new resume bot
 const canCreateBot = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.userId).populate('resumes');
+    const user = await User.findById(req.userId).populate('resumes');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -96,7 +96,7 @@ const canCreateBot = async (req, res, next) => {
 // Check if user can send a chat message
 const canSendMessage = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -129,7 +129,7 @@ const canSendMessage = async (req, res, next) => {
 const hasFeature = (feature) => {
   return async (req, res, next) => {
     try {
-      const user = await User.findById(req.user.userId);
+      const user = await User.findById(req.userId);
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
@@ -154,7 +154,7 @@ const hasFeature = (feature) => {
 // Get user's plan information
 const getPlanInfo = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).populate('resumes');
+    const user = await User.findById(req.userId).populate('resumes');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

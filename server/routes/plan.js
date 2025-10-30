@@ -12,7 +12,7 @@ router.get('/info', auth, getPlanInfo);
 router.post('/upgrade', auth, async (req, res) => {
   try {
     const { plan } = req.body;
-    const userId = req.user.userId;
+    const userId = req.userId;
 
     if (!['free', 'pro', 'team'].includes(plan)) {
       return res.status(400).json({ error: 'Invalid plan type' });
@@ -54,7 +54,7 @@ router.post('/upgrade', auth, async (req, res) => {
 // Downgrade to free plan
 router.post('/downgrade', auth, async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.userId;
 
     const user = await User.findById(userId);
     if (!user) {
