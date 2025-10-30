@@ -14,50 +14,58 @@ export default function Home() {
     {
       role: 'assistant',
       content: "👋 Hi! I'm an AI assistant representing John Doe. Ask me anything about John's experience, skills, projects, or education!",
-      delay: 500
+      delay: 300
     },
     {
       role: 'user',
       content: "What projects have you worked on?",
-      delay: 2500
+      delay: 1200
     },
     {
       role: 'assistant',
       content: "I've worked on several exciting projects! Recently, I built a full-stack e-commerce platform using React and Node.js, and created an AI-powered chatbot similar to this one. Would you like to know more about any specific project?",
-      delay: 4000
+      delay: 1500
     }
   ];
 
   useEffect(() => {
-    let timeouts = [];
-    let currentDelay = 0;
+    const runAnimation = () => {
+      let timeouts = [];
+      let currentDelay = 0;
 
-    demoConversation.forEach((message, index) => {
-      currentDelay += message.delay;
-      
-      const timeout = setTimeout(() => {
-        if (message.role === 'assistant') {
-          setIsTyping(true);
-          setTimeout(() => {
+      demoConversation.forEach((message, index) => {
+        currentDelay += message.delay;
+        
+        const timeout = setTimeout(() => {
+          if (message.role === 'assistant') {
+            setIsTyping(true);
+            setTimeout(() => {
+              setChatMessages(prev => [...prev, message]);
+              setIsTyping(false);
+            }, 600);
+          } else {
             setChatMessages(prev => [...prev, message]);
-            setIsTyping(false);
-          }, 1000);
-        } else {
-          setChatMessages(prev => [...prev, message]);
-        }
-      }, currentDelay);
+          }
+        }, currentDelay);
+        
+        timeouts.push(timeout);
+      });
+
+      // Reset and loop
+      const resetTimeout = setTimeout(() => {
+        setChatMessages([]);
+        setIsTyping(false);
+        // Restart animation after a brief pause
+        setTimeout(() => runAnimation(), 500);
+      }, currentDelay + 2500);
       
-      timeouts.push(timeout);
-    });
+      timeouts.push(resetTimeout);
 
-    // Reset and loop
-    const resetTimeout = setTimeout(() => {
-      setChatMessages([]);
-    }, currentDelay + 5000);
-    
-    timeouts.push(resetTimeout);
+      return () => timeouts.forEach(timeout => clearTimeout(timeout));
+    };
 
-    return () => timeouts.forEach(timeout => clearTimeout(timeout));
+    const cleanup = runAnimation();
+    return cleanup;
   }, []);
 
   const features = [
@@ -166,13 +174,14 @@ export default function Home() {
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
               </div>
               <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-4 sm:p-8 text-left min-h-[300px]">
-                <AnimatePresence>
+                <AnimatePresence mode="popLayout">
                   {chatMessages.map((msg, index) => (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
                       className={`flex items-start space-x-2 sm:space-x-4 mb-4 ${
                         msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''
                       }`}
@@ -183,8 +192,9 @@ export default function Home() {
                         </div>
                       )}
                       <motion.div
-                        initial={{ scale: 0.8 }}
+                        initial={{ scale: 0.9 }}
                         animate={{ scale: 1 }}
+                        transition={{ duration: 0.2 }}
                         className={`rounded-lg p-3 sm:p-4 shadow-md max-w-[85%] ${
                           msg.role === 'assistant'
                             ? 'bg-white text-gray-800'
@@ -201,6 +211,7 @@ export default function Home() {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
                     className="flex items-start space-x-2 sm:space-x-4"
                   >
                     <div className="bg-white p-2 sm:p-3 rounded-full">
@@ -209,13 +220,18 @@ export default function Home() {
                     <div className="bg-white rounded-lg p-3 sm:p-4 shadow-md">
                       <div className="flex space-x-2">
                         <motion.div
-                          animate={{ y: [0, -10, 0] }}
-                          transition={{ duration: 0.6, repeat: Infinity }}
+                          animate={{ y: [0, -8, 0] }}
+                          transition={{ duration: 0.4, repeat: Infinity, ease: "easeInOut" }}
                           className="w-2 h-2 bg-gray-400 rounded-full"
                         />
                         <motion.div
-                          animate={{ y: [0, -10, 0] }}
-                          transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                          animate={{ y: [0, -8, 0] }}
+                          transition={{ duration: 0.4, repeat: Infinity, delay: 0.15, ease: "easeInOut" }}
+                          className="w-2 h-2 bg-gray-400 rounded-full"
+                        />
+                        <motion.div
+                          animate={{ y: [0, -8, 0] }}
+                          transition={{ duration: 0.4, repeat: Infinity, delay: 0.3, ease: "easeInOut" }}
                           className="w-2 h-2 bg-gray-400 rounded-full"
                         />
                         <motion.div
