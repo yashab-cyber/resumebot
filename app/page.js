@@ -1,12 +1,64 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FaRobot, FaArrowRight, FaCheck, FaShare, FaDownload, FaCode } from 'react-icons/fa';
 
 export default function Home() {
   const [email, setEmail] = useState('');
+  const [chatMessages, setChatMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+
+  const demoConversation = [
+    {
+      role: 'assistant',
+      content: "👋 Hi! I'm an AI assistant representing John Doe. Ask me anything about John's experience, skills, projects, or education!",
+      delay: 500
+    },
+    {
+      role: 'user',
+      content: "What projects have you worked on?",
+      delay: 2500
+    },
+    {
+      role: 'assistant',
+      content: "I've worked on several exciting projects! Recently, I built a full-stack e-commerce platform using React and Node.js, and created an AI-powered chatbot similar to this one. Would you like to know more about any specific project?",
+      delay: 4000
+    }
+  ];
+
+  useEffect(() => {
+    let timeouts = [];
+    let currentDelay = 0;
+
+    demoConversation.forEach((message, index) => {
+      currentDelay += message.delay;
+      
+      const timeout = setTimeout(() => {
+        if (message.role === 'assistant') {
+          setIsTyping(true);
+          setTimeout(() => {
+            setChatMessages(prev => [...prev, message]);
+            setIsTyping(false);
+          }, 1000);
+        } else {
+          setChatMessages(prev => [...prev, message]);
+        }
+      }, currentDelay);
+      
+      timeouts.push(timeout);
+    });
+
+    // Reset and loop
+    const resetTimeout = setTimeout(() => {
+      setChatMessages([]);
+    }, currentDelay + 5000);
+    
+    timeouts.push(resetTimeout);
+
+    return () => timeouts.forEach(timeout => clearTimeout(timeout));
+  }, []);
 
   const features = [
     {
@@ -107,28 +159,74 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mt-16 max-w-4xl mx-auto"
           >
-            <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-200">
+            <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-8 border border-gray-200">
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
               </div>
-              <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-8 text-left">
-                <div className="flex items-start space-x-4 mb-4">
-                  <div className="bg-white p-3 rounded-full">
-                    <FaRobot className="text-2xl text-blue-600" />
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow-md flex-1">
-                    <p className="text-gray-800">
-                      👋 Hi! I'm an AI assistant representing John Doe. Ask me anything about John's experience, skills, projects, or education!
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4 flex-row-reverse">
-                  <div className="bg-blue-600 text-white rounded-lg p-4 shadow-md">
-                    <p>What projects have you worked on?</p>
-                  </div>
-                </div>
+              <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-4 sm:p-8 text-left min-h-[300px]">
+                <AnimatePresence>
+                  {chatMessages.map((msg, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className={`flex items-start space-x-2 sm:space-x-4 mb-4 ${
+                        msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''
+                      }`}
+                    >
+                      {msg.role === 'assistant' && (
+                        <div className="bg-white p-2 sm:p-3 rounded-full flex-shrink-0">
+                          <FaRobot className="text-lg sm:text-2xl text-blue-600" />
+                        </div>
+                      )}
+                      <motion.div
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        className={`rounded-lg p-3 sm:p-4 shadow-md max-w-[85%] ${
+                          msg.role === 'assistant'
+                            ? 'bg-white text-gray-800'
+                            : 'bg-blue-600 text-white'
+                        }`}
+                      >
+                        <p className="text-sm sm:text-base">{msg.content}</p>
+                      </motion.div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                
+                {isTyping && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-start space-x-2 sm:space-x-4"
+                  >
+                    <div className="bg-white p-2 sm:p-3 rounded-full">
+                      <FaRobot className="text-lg sm:text-2xl text-blue-600" />
+                    </div>
+                    <div className="bg-white rounded-lg p-3 sm:p-4 shadow-md">
+                      <div className="flex space-x-2">
+                        <motion.div
+                          animate={{ y: [0, -10, 0] }}
+                          transition={{ duration: 0.6, repeat: Infinity }}
+                          className="w-2 h-2 bg-gray-400 rounded-full"
+                        />
+                        <motion.div
+                          animate={{ y: [0, -10, 0] }}
+                          transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                          className="w-2 h-2 bg-gray-400 rounded-full"
+                        />
+                        <motion.div
+                          animate={{ y: [0, -10, 0] }}
+                          transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
+                          className="w-2 h-2 bg-gray-400 rounded-full"
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </div>
             </div>
           </motion.div>
