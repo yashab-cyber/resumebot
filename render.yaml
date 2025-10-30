@@ -1,10 +1,12 @@
 services:
-  # Backend API Service
+  # Single Combined Service (Frontend + Backend)
   - type: web
-    name: resumebot-api
+    name: resumebot
     env: node
-    buildCommand: npm install
-    startCommand: node server/index.js
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -18,17 +20,7 @@ services:
         sync: false
       - key: AI_PROVIDER
         value: gemini
-
-  # Frontend Next.js Service
-  - type: web
-    name: resumebot-frontend
-    env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
       - key: NEXT_PUBLIC_API_URL
-        sync: false
+        value: https://resumebot-4599.onrender.com/api
       - key: NEXT_PUBLIC_APP_URL
-        sync: false
+        value: https://resumebot-4599.onrender.com

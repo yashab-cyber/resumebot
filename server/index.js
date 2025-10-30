@@ -27,7 +27,7 @@ app.use('/api/bot', require('./routes/bot'));
 app.use('/api/chat', require('./routes/chat'));
 
 // Health Check
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'ResumeBot API is running' });
 });
 
