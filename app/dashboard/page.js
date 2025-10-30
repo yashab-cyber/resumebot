@@ -87,16 +87,16 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2">
-              <FaRobot className="text-3xl text-blue-600" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <FaRobot className="text-2xl sm:text-3xl text-blue-600" />
+              <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 ResumeBot
               </span>
             </Link>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Welcome, {user?.name}!</span>
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <span className="hidden sm:inline text-sm sm:text-base text-gray-700">Welcome, {user?.name}!</span>
               <button
                 onClick={handleLogout}
-                className="text-gray-700 hover:text-blue-600 transition"
+                className="text-sm sm:text-base text-gray-700 hover:text-blue-600 transition"
               >
                 Logout
               </button>
@@ -106,15 +106,15 @@ export default function Dashboard() {
       </nav>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">My Resume Bots</h1>
-            <p className="text-gray-600">Create and manage your AI-powered resume chatbots</p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">My Resume Bots</h1>
+            <p className="text-sm sm:text-base text-gray-600">Create and manage your AI-powered resume chatbots</p>
           </div>
           <Link
             href="/create"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center space-x-2"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition flex items-center justify-center space-x-2 text-sm sm:text-base"
           >
             <FaPlus />
             <span>Create New Bot</span>
@@ -122,32 +122,32 @@ export default function Dashboard() {
         </div>
 
         {resumes.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-            <FaRobot className="text-6xl text-gray-300 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">No Resume Bots Yet</h2>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-8 sm:p-12 text-center">
+            <FaRobot className="text-5xl sm:text-6xl text-gray-300 mx-auto mb-4" />
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">No Resume Bots Yet</h2>
+            <p className="text-sm sm:text-base text-gray-600 mb-6 px-4">
               Create your first AI-powered resume bot to get started
             </p>
             <Link
               href="/create"
-              className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition text-sm sm:text-base"
             >
               <FaPlus />
               <span>Create Your First Bot</span>
             </Link>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {resumes.map((resume) => (
               <div key={resume._id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition">
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
-                  <h3 className="text-xl font-bold mb-1">{resume.personalInfo.fullName}</h3>
-                  <p className="text-blue-100 text-sm">{resume.personalInfo.email}</p>
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 sm:p-6 text-white">
+                  <h3 className="text-lg sm:text-xl font-bold mb-1 truncate">{resume.personalInfo.fullName}</h3>
+                  <p className="text-blue-100 text-xs sm:text-sm truncate">{resume.personalInfo.email}</p>
                 </div>
                 
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center space-x-3 sm:space-x-4 text-xs sm:text-sm text-gray-600">
                       <div className="flex items-center space-x-1">
                         <FaEye />
                         <span>{resume.analytics.views}</span>
@@ -160,42 +160,41 @@ export default function Dashboard() {
                   </div>
 
                   <div className="mb-4">
-                    <p className="text-sm text-gray-500 mb-1">Bot ID:</p>
-                    <code className="bg-gray-100 px-2 py-1 rounded text-sm">{resume.botId}</code>
+                    <p className="text-xs sm:text-sm text-gray-500 mb-1">Bot ID:</p>
+                    <code className="bg-gray-100 px-2 py-1 rounded text-xs sm:text-sm break-all">{resume.botId}</code>
                   </div>
 
-                  <div className="flex space-x-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <Link
                       href={`/bot/${resume.botId}`}
                       target="_blank"
-                      className="flex-1 bg-blue-600 text-white text-center py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center space-x-1"
+                      className="bg-blue-600 text-white text-center py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center space-x-1 text-xs sm:text-sm"
                     >
                       <FaEye />
                       <span>View</span>
                     </Link>
                     <Link
-                      href={`/edit/${resume._id}`}
-                      className="flex-1 bg-gray-600 text-white text-center py-2 rounded-lg hover:bg-gray-700 transition flex items-center justify-center space-x-1"
-                    >
-                      <FaEdit />
-                      <span>Edit</span>
-                    </Link>
-                    <Link
                       href={`/share/${resume.botId}`}
-                      className="flex-1 bg-green-600 text-white text-center py-2 rounded-lg hover:bg-green-700 transition flex items-center justify-center space-x-1"
+                      className="bg-green-600 text-white text-center py-2 rounded-lg hover:bg-green-700 transition flex items-center justify-center space-x-1 text-xs sm:text-sm"
                     >
                       <FaShare />
                       <span>Share</span>
                     </Link>
+                    <button
+                      onClick={() => router.push(`/create?edit=${resume._id}`)}
+                      className="bg-gray-600 text-white text-center py-2 rounded-lg hover:bg-gray-700 transition flex items-center justify-center space-x-1 text-xs sm:text-sm"
+                    >
+                      <FaEdit />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(resume._id)}
+                      className="bg-red-600 text-white text-center py-2 rounded-lg hover:bg-red-700 transition flex items-center justify-center space-x-1 text-xs sm:text-sm"
+                    >
+                      <FaTrash />
+                      <span>Delete</span>
+                    </button>
                   </div>
-
-                  <button
-                    onClick={() => handleDelete(resume._id)}
-                    className="w-full mt-2 bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100 transition flex items-center justify-center space-x-1"
-                  >
-                    <FaTrash />
-                    <span>Delete</span>
-                  </button>
                 </div>
               </div>
             ))}
