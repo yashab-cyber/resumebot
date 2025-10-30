@@ -26,11 +26,16 @@ router.post('/:botId', async (req, res) => {
     const { botId } = req.params;
     const { message, sessionId } = req.body;
 
+    console.log('📨 Chat request received:', { botId, message, sessionId });
+
     // Get resume data
     const resume = await Resume.findOne({ botId, isPublic: true });
     if (!resume) {
+      console.error('❌ Bot not found:', botId);
       return res.status(404).json({ error: 'Bot not found' });
     }
+
+    console.log('✅ Resume found:', resume.personalInfo.fullName);
 
     // Get or create session
     const sid = sessionId || uuidv4();
@@ -79,6 +84,13 @@ router.post('/:botId', async (req, res) => {
       assistantMessage = completion.choices[0].message.content;
     } else if (AI_PROVIDER === 'gemini') {
       // Google Gemini implementation
+      console.log('🤖 Using Gemini AI');
+      
+      if (!gemini) {
+        console.error('❌ Gemini not initialized! API Key:', process.env.GEMINI_API_KEY ? 'Present' : 'Missing');
+        throw new Error('Gemini AI not initialized');
+      }
+
       const model = gemini.getGenerativeModel({ model: 'gemini-pro' });
 
       // Build conversation history for Gemini
@@ -97,9 +109,11 @@ ${conversationHistory ? `Previous conversation:\n${conversationHistory}\n\n` : '
 
 Respond naturally and professionally:`;
 
+      console.log('📤 Sending to Gemini...');
       const result = await model.generateContent(prompt);
       const response = await result.response;
       assistantMessage = response.text();
+      console.log('✅ Gemini response received:', assistantMessage.substring(0, 100) + '...');
     }
 
     // Save to chat history
@@ -118,8 +132,12 @@ Respond naturally and professionally:`;
       sessionId: sid,
     });
   } catch (error) {
-    console.error('Chat error:', error);
-    res.status(500).json({ error: 'Failed to process chat message' });
+    console.error('❌ Chat error:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ 
+      error: 'Failed to process chat message',
+      details: error.message 
+    });
   }
 });
 

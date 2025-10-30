@@ -66,6 +66,13 @@ export default function BotPage() {
         const data = await response.json();
         setSessionId(data.sessionId);
         setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
+      } else {
+        const errorData = await response.json();
+        console.error('API error:', errorData);
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: `Sorry, I encountered an error: ${errorData.error || 'Please try again.'}`,
+        }]);
       }
     } catch (error) {
       console.error('Error sending message:', error);
