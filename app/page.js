@@ -339,17 +339,78 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 px-4">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <FaRobot className="text-3xl text-blue-400" />
-            <span className="text-2xl font-bold">ResumeBot</span>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Brand */}
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center space-x-2 mb-4">
+                <FaRobot className="text-3xl text-blue-400" />
+                <span className="text-2xl font-bold">ResumeBot</span>
+              </div>
+              <p className="text-gray-400 mb-4">
+                Transforming traditional resumes into interactive AI experiences. Stand out from the crowd with an AI-powered chatbot that showcases your skills 24/7.
+              </p>
+            </div>
+
+            {/* Product */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Product</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/demo" className="text-gray-400 hover:text-white transition">
+                    Demo
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/register" className="text-gray-400 hover:text-white transition">
+                    Get Started
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/login" className="text-gray-400 hover:text-white transition">
+                    Login
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="text-gray-400 hover:text-white transition">
+                    Pricing
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/privacy" className="text-gray-400 hover:text-white transition">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="text-gray-400 hover:text-white transition">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/cookies" className="text-gray-400 hover:text-white transition">
+                    Cookie Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="text-gray-400 hover:text-white transition">
+                    Contact Us
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
-          <p className="text-gray-400 mb-4">
-            Transforming traditional resumes into interactive AI experiences
-          </p>
-          <p className="text-gray-500 text-sm">
-            © 2025 ResumeBot. All rights reserved.
-          </p>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+            <p>© 2025 ResumeBot. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>
