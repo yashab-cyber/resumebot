@@ -1,12 +1,12 @@
 services:
-  # Single Combined Service (Frontend + Backend)
+  # Combined Service (Frontend + Backend on same port)
   - type: web
     name: resumebot
     env: node
     region: oregon
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production
